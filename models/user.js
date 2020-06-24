@@ -35,14 +35,15 @@ class User {
     return result.rows;
   }
 
-  /** Get: get user by username
-   *WHERE m.id = $1
-   * returns {username,
-   *          first_name,
-   *          last_name,
-   *          phone,
-   *          join_at,
-   *          last_login_at } */
+  /** Get: get user by username 
+   
+   * returns username,
+                first_name,
+                last_name,
+                email,
+                photo_url
+   *         
+   *  */
 
   static async get(username) {
     const result = await db.query(

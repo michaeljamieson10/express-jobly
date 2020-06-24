@@ -2,8 +2,6 @@ process.env.NODE_ENV = "test";
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const Jobs  = require("../../models/Jobs");
-const Methods  = require("../../models/methods");
 const bcrypt = require("bcrypt")
 const BCRYPT_WORK_FACTOR = 1;
 const jwt = require("jsonwebtoken");
@@ -37,21 +35,17 @@ beforeEach(async function() {
     const testAdmin = {username: "testAdmin", is_admin:true}
     testAdminToken = jwt.sign(testAdmin, SECRET_KEY);
     
-    // ---
     const testUser = {username: "test"}
     testUserToken = jwt.sign(testUser, SECRET_KEY);
-    // let result = 
     await db.query(
         `INSERT INTO
          companies (handle, name, num_employees, description, logo_url)
             VALUES ('apples', 'macs', 5000, 'Maker of apple products', 'urltext')
             RETURNING handle, name, num_employees, description, logo_url;`)
-    // testCompany = result.rows[0]
     let result2 = await db.query(
         `INSERT INTO
-         jobs (title, salary, equity, company_handle)
-         VALUES ('Engineer', 100000.00, 500, 'apples');`)
-    // testJob = result2.rows[0]
+         jobs (id, title, salary, equity, company_handle)
+         VALUES (1,'Engineer', 100000.00, 500, 'apples');`)
 })
 afterEach(async function(){
     try {
@@ -129,7 +123,6 @@ describe("GET /jobs/:id specific job with id",  () => {
         const response = await request(app)
             .get("/jobs/1")
             .send({_token: testUserToken});
-        console.log(response.body, " <---- Inside job/:id")
         expect(response.statusCode).toEqual(200); 
 
     })
@@ -154,30 +147,22 @@ describe("PATCH /company create a company",  () => {
             "equity": 150,
             "company_handle": "apples"
             });
-            console.log(response.body)
-        // expect(response.body).toEqual({
-        //     handle: 'Windows',
-        //     name: 'Bill Gates',
-        //     num_employees: 5000,
-        //     description: 'maker of microsoft',
-        //     logo_url: 'somelogourl'
-        //   })
+      
         expect(response.statusCode).toBe(200); 
 
     })
-    // test("PATCH  with admin token and data updates to give error because schema, gives response", async () => {
-//         const response = await request(app)
-//             .patch(`/companies/apples`)
-//             .send({_token: testAdminToken,
-//                 "handle": "Windows",
-//                 "name": "Bill Gates",
-//                 "num_employees": 5000,
-//                 "description": "maker of microsoft",
-//                 "logo_urls": "somelogourl"
-//             });
-//         expect(response.statusCode).toBe(400); 
+    test("PATCH  with admin token and data updates to give error because schema, gives response", async () => {
+        const response = await request(app)
+            .patch(`/jobs/1`)
+            .send({_token: testAdminToken,
+                "skadhsad": "baddata",
+                "salary": 85000.00,
+                "equity": 150,
+                "company_handle": "apples"
+            });
+        expect(response.statusCode).toBe(400); 
 
-    // })
+    })
 
 }) 
 describe("DELETE /job create a job",  () => {

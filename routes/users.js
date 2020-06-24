@@ -2,11 +2,10 @@ const express = require("express");
 const router = new express.Router();
 const Methods = require("../models/methods");
 const User = require("../models/user");
-const partialUpdate = require("../helpers/partialUpdate");
 const jwt = require("jsonwebtoken");
 const {SECRET_KEY} = require("../config");
 const bcrypt = require("bcrypt");
-const {ensureLoggedIn, ensureCorrectUser, authRequired} = require("../middleware/auth");
+const {ensureCorrectUser} = require("../middleware/auth");
 const userPostSchema = require("../schemas/userPostSchema.json");
 const userPatchSchema = require("../schemas/userPatchSchema.json");
 const loginPostSchema = require("../schemas/loginPostSchema.json");
@@ -23,53 +22,33 @@ This should return JSON: {users: [{username, first_name, last_name, email}, ...]
  **/
 router.get('/', async (req, res, next) => {
     try{
-        // const {username, first_name, last_name, email} = req.body
         const items = ['username', 'first_name', 'last_name', 'email'];
-        // const items
-        // // const items = {
-        // //     'handle':
-        // //     //             name,
-        // //     //             num_employees,
-        // //     //             description,
-        // //     //             logo_url"
-        // // }
         const results = await Methods.all("users", items)
         return res.json(results)
     } catch (e) {
-        // return next(e)
+        return next(e)
     }
-
 });
 
 /** Post / -
  *
  This should create a new company and return the newly created company.
-
- users (
-    username text PRIMARY KEY,
-    password text NOT NULL,
-    first_name text NOT NULL,
-    last_name text NOT NULL,
-    email text NOT NULL,
-    photo_url text,
-    is_admin boolean NOT NULL DEFAULT false
-);
-
+ const items = {
+            "username": "josh1337",
+            "password": "password123",
+            "first_name": "josh",
+            "last_name": "jackson",
+            "email": "email@email.com",
+            "photo_url": "photourl",
+            "is_admin": true
+        }
 This should return JSON of {user: userData}
  *
  **/
 router.post('/', async (req, res, next) => {
     try{
         const {username, password, first_name, last_name, email, photo_url, is_admin} = req.body
-        // const items = {
-        //     "username": "josh1337",
-        //     "password": "password123",
-        //     "first_name": "josh",
-        //     "last_name": "jackson",
-        //     "email": "email@email.com",
-        //     "photo_url": "photourl",
-        //     "is_admin": true
-        // }
+       
         const result = jsonschema.validate(req.body, userPostSchema)
         if (!result.valid){
             const listOfErrors = result.errors.map(e => e.stack)
@@ -86,17 +65,13 @@ router.post('/', async (req, res, next) => {
     }
 
 });
+
+/**
+ * this is to login and authenticate post username and password of user for json token
+ * 
+ */
 router.post('/login', async (req, res, next) => {
-        // const items = {
-        //     "username": "josh1337",
-        //     "password": "password123",
-        //     "first_name": "josh",
-        //     "last_name": "jackson",
-        //     "email": "email@email.com",
-        //     "photo_url": "photourl",
-        //     "is_admin": true
-        // }
-        // const response = await Methods.create("users", req.body)
+      
         try {
             const result = jsonschema.validate(req.body, loginPostSchema)
             if (!result.valid){
@@ -123,22 +98,21 @@ router.post('/login', async (req, res, next) => {
 
 });
 
-/** get handle / -
+/** get user by username in url param / -
  *
 This should return a single company found by its id.
 
-This should return JSON of {company: companyData}
+This should return JSON of user
  *
  **/
 
 router.get('/:username', async (req, res, next) => {
     try{
         const { username } = req.params;
-        // const items = {'username': username}
         const response = await User.get(username)
         return res.json(response);
     } catch (e) {
-        // return next(e)
+        return next(e)
     }
 
 });
@@ -171,20 +145,18 @@ router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
 /**  
  *
 
-DELETE /companies/[handle]
-This should remove an existing company and return a message.
+DELETE /users/:username
+This should remove an existing user and return a message.
 
-This should return JSON of {message: "Company deleted"}
+This should return JSON of {"Deleted {nameofuser}"}
  *
  **/
 
 router.delete('/:username',ensureCorrectUser , async (req, res, next) => {
     try{
         const { username } = req.params
-        // const res = await Methods.remove("companies",username, 'username')
         const response = await Methods.delete('users',username,'username')
         return res.json(`Deleted ${username}`)
-        // return res.json('work this is username');
     } catch (e) {
         return next(e)
     }

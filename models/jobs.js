@@ -38,7 +38,7 @@ class Jobs {
             ans, queryValues
         );
         return result.rows;
-        // return [ans, queryValues]
+        
       }
  
 }

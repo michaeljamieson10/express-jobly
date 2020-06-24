@@ -2,9 +2,7 @@ process.env.NODE_ENV = "test";
 const request = require("supertest");
 const app = require("../../app");
 const db = require("../../db");
-const Jobs  = require("../../models/Jobs");
-const Methods  = require("../../models/methods");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const BCRYPT_WORK_FACTOR = 1;
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../../config")
@@ -24,7 +22,6 @@ beforeEach(async function() {
             VALUES ('test', $1,'michael', 'jamieson','mj123@gmail.com','photourl')
     `,[hashedPassword])
 
-    // ---
     
     const hashedPassword2 = await bcrypt.hash(
         "secret", BCRYPT_WORK_FACTOR
@@ -37,22 +34,17 @@ beforeEach(async function() {
     const testAdmin = {username: "testAdmin", is_admin:true}
     testAdminToken = jwt.sign(testAdmin, SECRET_KEY);
     
-    // ---
-    const testUser = {username: "test"}
+    const testUser = {username: "test"};
     testUserToken = jwt.sign(testUser, SECRET_KEY);
-    console.log(testUserToken)
-    // let result = 
     await db.query(
         `INSERT INTO
          companies (handle, name, num_employees, description, logo_url)
             VALUES ('apples', 'macs', 5000, 'Maker of apple products', 'urltext')
-            RETURNING handle, name, num_employees, description, logo_url;`)
-    // testCompany = result.rows[0]
+            RETURNING handle, name, num_employees, description, logo_url;`);
     let result2 = await db.query(
         `INSERT INTO
          jobs (title, salary, equity, company_handle)
-         VALUES ('Engineer', 100000.00, 500, 'apples');`)
-    // testJob = result2.rows[0]
+         VALUES ('Engineer', 100000.00, 500, 'apples');`);
 })
 afterEach(async function(){
     try {

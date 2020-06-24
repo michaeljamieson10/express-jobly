@@ -44,12 +44,10 @@ class Methods {
     return result.rows
   }
 
-  /** create new company -- returns
-   *  //     "handle": "Windows",
-        //     "name": "Bill Gates",
-        //     "num_employees": 5000,
-        //     "description": "maker of microsoft",
-        //     "logo_url": "somelogourl"
+  /** create new of table and items inserted -- returns
+   * 
+   *  
+   * 
    */
 
   static async create(table, items) {
@@ -58,7 +56,7 @@ class Methods {
   
     let idx = 1;
     let idxArr = [];
-    // idxArr.push(idx);
+    
     let columns = [];
 
     // filter out keys that start with "_" -- we don't want these in DB
@@ -85,7 +83,6 @@ class Methods {
         query, values
     );
     return result.rows[0];
-//  return { query, values}
   }
 
   static async get(table, items) {
@@ -103,17 +100,12 @@ class Methods {
     for (let column in items) {
       columnNew += column
     }
-    // const res = await db.query(`SELECT * FROM ${table} WHERE ${columnNew} = $1`, values);
-// 
-    // if (res.rows.length === 0) {
-      // throw { message: `There is no ${table} with a ${columnNew} of '${values}`, status: 404 }
-    // }
-// 
-    // return res.rows[0];
     let query = `SELECT * FROM ${table} WHERE ${columnNew} = $1`;
     const response = await db.query(query, values)
+    if (response.rows.length === 0) {
+      throw { message: `There is no ${table} with a ${columnNew} of '${values}`, status: 404 }
+    }
     return response.rows[0];
-    //  return { query, values}
   }
   
   static async patch(table, items, key, id) {
@@ -143,46 +135,13 @@ class Methods {
     values.push(id);
     const result = await db.query(query, values);
     return result.rows[0]
-    // return {query, values}
   }
   static async delete(table,value,key) {
-    // return `DELETE FROM ${table} WHERE ${key} = $1`, value;
     const result = await db.query(`DELETE FROM ${table} WHERE ${key} = $1`, [value]);
     return `deleted ${table} ${value}`
-    // let query = `DELETE FROM ${table} WHERE ${key} = $1`
-    // return {query, value}
+  
   }
 
-  // static async register(table, items, key) {
-  // username |  password   | first_name | last_name |      email      | photo_url | is_admin
-  // }
-
-  static async register({username, password, first_name, last_name, email, photo_url, is_admin}) {
-    let hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
-    const results = await db.query(
-        `INSERT INTO users (
-          username,
-          password,
-          first_name,
-          last_name,
-          email,
-          photo_url,
-          is_admin)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *`,
-      [username, hashedPassword, first_name, last_name, email, photo_url, is_admin]
-      );
-      
-    return results.rows[0]
-  }
-  static async authenticate(username, password) {
-    const result = await db.query(
-        "SELECT username, password, is_admin FROM users WHERE username = $1",
-        [username]);
-    let user = result.rows[0];
-
-    return user;
-  }
   static async remove(table, items, key) {
 
     let columnNew = "";
@@ -198,12 +157,9 @@ class Methods {
     for (let column in items) {
       columnNew += column
     }
-    // const str = `DELETE FROM ${table} WHERE ${key} = $1`
     const res = await db.query(`DELETE FROM ${table} WHERE ${key} = $1`, value);
 
-
     return `${values} Deleted`
-
 
   }
 }

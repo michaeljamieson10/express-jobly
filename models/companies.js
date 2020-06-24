@@ -40,13 +40,13 @@ class Company {
     } 
     const wExpressionsJ = whereExpressions.join(" AND ")
     const ans = baseQuery + ' WHERE ' + wExpressionsJ
-    // const ans = baseQuery + ' WHERE ' + wExpressionsJ + queryValues
+    
     //insert into db
     const result = await db.query(
         ans, queryValues
     );
     return result.rows;
-    // return ans
+    
   }
 }
 module.exports = Company;
