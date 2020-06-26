@@ -63,7 +63,7 @@ afterAll(async function(){
       }
 })
 describe("POST /users", async function () {
-    test("Creates a new job", async function () {
+    test("Creates a new user", async function () {
       const response = await request(app)
           .post(`/users`)
           .send({
@@ -75,17 +75,9 @@ describe("POST /users", async function () {
             "photo_url": "photourl",
             "is_admin": true
         });
-        console.log(response.body)
+        
       expect(response.statusCode).toBe(201);
-      expect(response.body).toEqual({
-        username: 'josh1337',
-        password: 'password123',
-        first_name: 'josh',
-        last_name: 'jackson',
-        email: 'email@email.com',
-        photo_url: 'photourl',
-        is_admin: true
-      });
+      expect(response.body).toEqual({ token: expect.any(String) });
     });
   });
 
@@ -94,7 +86,7 @@ describe("GET /users get users",  () => {
         const response = await request(app)
             .get(`/users`);
            
-        console.log(response.body)
+        
         expect(response.statusCode).toEqual(200); 
         expect(response.body).toEqual( [
             {
@@ -120,7 +112,7 @@ describe("GET /users/:username specific job with id",  () => {
         const response = await request(app)
             .get("/users/test")
             .send({_token: testUserToken});
-        console.log(response.body, " <---- Inside user:/get")
+        
         expect(response.statusCode).toEqual(200); 
 
     })
@@ -138,7 +130,7 @@ describe("PATCH /user/:username create a user/:username",  () => {
             "photo_url": "photourl",
             "is_admin": true
         });
-            console.log(response.body)
+            
         expect(response.body).toEqual({
             "username": "test",
             "first_name": "josh",

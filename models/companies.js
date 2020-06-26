@@ -12,7 +12,7 @@ class Company {
     let idx = 1;
 
     if(+data.max_employees < +data.min_employees){
-        throw new ExpressError("Invalid ", 400);
+        throw new ExpressError("Invalid Max employees must be greater than min employees", 400);
     }
 
     if (data.min_employees){

@@ -21,7 +21,7 @@ beforeEach(async function() {
             VALUES ('test', $1,'michael', 'jamieson','mj123@gmail.com','photourl')
     `,[hashedPassword])
 
-    // ---
+    
     
     const hashedPassword2 = await bcrypt.hash(
         "secret", BCRYPT_WORK_FACTOR
@@ -34,7 +34,7 @@ beforeEach(async function() {
     const testAdmin = {username: "testAdmin", is_admin:true}
     testAdminToken = jwt.sign(testAdmin, SECRET_KEY);
     
-    // ---
+    
     const testUser = {username: "test"}
     testUserToken = jwt.sign(testUser, SECRET_KEY);
     let result = await db.query(
@@ -74,7 +74,7 @@ describe("GET /company get company",  () => {
             .send({_token: testUserToken});
         expect(response.statusCode).toEqual(200); 
         expect(response.body.companies).toHaveLength(1);
-        // expect(response.body).toEqual({ companies: [ { handle: 'apples', name: 'macs' } ] });
+
 
     })
 }) 
@@ -83,7 +83,7 @@ describe("GET /company/:handle specific company with handle",  () => {
         const response = await request(app)
             .get(`/companies/apples`)
             .send({_token: testUserToken});
-        // expect(1).toBe(1); 
+        
         expect(response.body).toEqual({
             handle: 'apples',
             name: 'macs',
@@ -98,7 +98,7 @@ describe("GET /company/:handle specific company with handle",  () => {
         const response = await request(app)
             .get(`/companies/apples`)
             .send({_token: 'baddata'});
-        // expect(1).toBe(1); 
+        
         
         expect(response.statusCode).toEqual(401); 
 

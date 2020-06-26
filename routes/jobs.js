@@ -30,12 +30,12 @@ router.get('/', authRequired,async (req, res, next) => {
  *
  This should create a a new job and give an id with auto incrementing
         data needed for post submit in insomnia
-        // const items = {
-        //     "title": "Janitor",
-        //     "salary": 85000.00,
-        //     "equity": 150,
-        //     "company_handle": "apple"
-        // }
+        const items = {
+            "title": "Janitor",
+            "salary": 85000.00,
+            "equity": 150,
+            "company_handle": "apple"
+        }
  *
  **/
 router.post('/',adminRequired ,async (req, res, next) => {
@@ -113,8 +113,8 @@ This should return JSON of {message: "Company deleted"}
 router.delete('/:id',adminRequired ,async (req, res, next) => {
     try{
         const { id } = req.params
-        const response = await Methods.delete('jobs', Number(id),'id')
-        return res.json(response)
+        await Methods.delete('jobs', Number(id),'id')
+        return res.json({message: "Job deleted"})
     } catch (e) {
         return next(e)
     }

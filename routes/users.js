@@ -32,7 +32,7 @@ router.get('/', async (req, res, next) => {
 
 /** Post / -
  *
- This should create a new company and return the newly created company.
+ This should create a new user and return the newly created user.
  const items = {
             "username": "josh1337",
             "password": "password123",
@@ -46,6 +46,7 @@ This should return JSON of {user: userData}
  *
  **/
 router.post('/', async (req, res, next) => {
+    
     try{
         const {username, password, first_name, last_name, email, photo_url, is_admin} = req.body
        
@@ -57,9 +58,12 @@ router.post('/', async (req, res, next) => {
         }
         
         const items = {username, password, first_name, last_name, email, photo_url, is_admin};
-        const response = await Methods.create("users", items)
-        
-        return res.status(201).json(response);
+        const user = await User.register(items)
+        if (user) {
+            const is_admin = user.is_admin;
+            let token = jwt.sign({username, is_admin}, SECRET_KEY);
+            return res.status(201).json({token});
+        }
     } catch (e) {
         return next(e)
     }
@@ -81,7 +85,9 @@ router.post('/login', async (req, res, next) => {
             }
             
             let {username, password} = req.body;
-            const user = await Methods.authenticate(username, password);
+
+            const user = await User.authenticate(username, password);
+            
             if (user && await bcrypt.compare(password, user.password)) {
                 const is_admin = user.is_admin;
                 let token = jwt.sign({username, is_admin}, SECRET_KEY);

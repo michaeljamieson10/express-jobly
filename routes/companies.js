@@ -107,7 +107,7 @@ router.delete('/:handle',adminRequired, async (req, res, next) => {
     try{
         const { handle } = req.params
         const response = await Methods.delete("companies",handle, 'handle')
-        return res.json(response)
+        return res.json({message: "Company Deleted"})
     } catch (e) {
         return next(e)
     }
